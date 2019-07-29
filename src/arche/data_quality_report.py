@@ -36,7 +36,7 @@ class DataQualityReport:
         """
         self.schema = schema
         self.report = report
-        self.figures: Optional[List] = []
+        self.figures: List = []
         self.appendix = self.create_appendix(self.schema.raw)
         self.create_figures(items)
         self.plot_to_notebook()
@@ -44,7 +44,7 @@ class DataQualityReport:
         if bucket:
             self.save_report_to_bucket(
                 project_id=items.key.split("/")[0],
-                spider=items.job.metadata.get("spider"),
+                spider=items.job.metadata.get("spider"),  # type: ignore
                 bucket=bucket,
             )
 
@@ -63,7 +63,7 @@ class DataQualityReport:
         no_of_price_warns = price_was_now_result.err_items_count
         no_of_checked_price_items = price_was_now_result.items_count
 
-        crawlera_user = api.get_crawlera_user(items.job)
+        crawlera_user = api.get_crawlera_user(items.job)  # type: ignore
 
         validation_errors = self.report.results.get(
             "JSON Schema Validation",
@@ -77,7 +77,7 @@ class DataQualityReport:
         )
 
         quality_estimation, field_accuracy = generate_quality_estimation(
-            items.job,
+            items.job,  # type: ignore
             crawlera_user,
             validation_errors,
             name_url_dups.err_items_count,
@@ -91,7 +91,7 @@ class DataQualityReport:
         )
 
         self.score_table(quality_estimation, field_accuracy)
-        self.job_summary_table(items.job)
+        self.job_summary_table(items.job)  # type: ignore
         self.rules_summary_table(
             items.df,
             validation_errors,

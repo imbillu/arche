@@ -1,6 +1,6 @@
 from collections import defaultdict
 import random
-from typing import Any, Deque, Dict, List, Optional
+from typing import Any, Deque, Dict, List, Optional, DefaultDict
 
 from arche.readers.items import RawItems
 from arche.readers.schema import Schema
@@ -92,7 +92,7 @@ def fast_validate(
     Returns:
         A dictionary of errors with message and item keys
     """
-    errors = defaultdict(set)
+    errors: DefaultDict = defaultdict(set)
 
     validate = fastjsonschema.compile(schema)
     for i, raw_item in enumerate(
@@ -113,7 +113,7 @@ def full_validate(
     """This function uses jsonschema validator which returns all found error per item.
     See `fast_validate()` for arguments descriptions.
     """
-    errors = defaultdict(set)
+    errors: DefaultDict = defaultdict(set)
 
     validator = validators.validator_for(schema)(schema)
     validator.format_checker = FormatChecker()
@@ -134,7 +134,7 @@ def format_validation_message(
     error_msg: str, path: Deque, schema_path: Deque, validator: str
 ) -> str:
     str_path = "/".join(p for p in path if isinstance(p, str))
-    schema_path = "/".join(p for p in schema_path)
+    schema_path = "/".join(p for p in schema_path)  # type: ignore
 
     if validator == "anyOf":
         if str_path:

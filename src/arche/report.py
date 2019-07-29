@@ -38,7 +38,7 @@ class Report:
     def write_summary(cls, result: Result) -> None:
         cls.write_rule_name(result.name)
         if not result.messages:
-            cls.write_rule_outcome(Outcome.PASSED, Level.INFO)
+            cls.write_rule_outcome(Outcome.PASSED, Level.INFO)  #type: ignore
         for level, rule_msgs in result.messages.items():
             for rule_msg in rule_msgs:
                 cls.write_rule_outcome(rule_msg.summary, level)
