@@ -1,6 +1,6 @@
 from io import StringIO
 import json
-from typing import Optional
+from typing import Optional, List
 
 
 from arche.figures import tables
@@ -36,7 +36,7 @@ class DataQualityReport:
         """
         self.schema = schema
         self.report = report
-        self.figures = []
+        self.figures: Optional[List] = []
         self.appendix = self.create_appendix(self.schema.raw)
         self.create_figures(items)
         self.plot_to_notebook()
