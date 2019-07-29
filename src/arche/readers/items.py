@@ -47,6 +47,7 @@ class Items:
         for column in self.df.columns:
             if column in new:
                 return column
+        return ''
 
     @classmethod
     def from_df(cls, df: pd.DataFrame):
@@ -66,7 +67,7 @@ class CloudItems(Items):
     ):
         self.key = key
         self._count = count
-        self._limit = None
+        self._limit: Any = None
         self.filters = filters
         raw = self.fetch_data()
         df = pd.DataFrame(list(raw))
@@ -104,7 +105,7 @@ class JobItems(CloudItems):
         filters: Optional[api.Filters] = None,
     ):
         self.start_index = start_index
-        self.start: int = f"{key}/{start_index}"
+        self.start: str = f"{key}/{start_index}"
         self._job: Job = None
         super().__init__(key, count, filters)
 

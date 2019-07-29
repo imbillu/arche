@@ -3,7 +3,7 @@ from functools import partial
 import math
 from multiprocessing import Pool
 import time
-from typing import Dict, List, Tuple, Optional, Union
+from typing import Dict, List, Tuple, Optional, Union, cast
 
 from arche.tools import helpers
 from dateutil.relativedelta import relativedelta
@@ -144,7 +144,8 @@ def get_items_with_pool(
         A numpy array of items
     """
     active_connections_limit = 10
-    processes_count = min(max(helpers.cpus_count(), workers), active_connections_limit)
+    processes_count: int = cast(
+        int, min(max(helpers.cpus_count(), workers), active_connections_limit))
     batch_size = math.ceil(count / processes_count)
 
     start_idxs = range(start_index, start_index + count, batch_size)
