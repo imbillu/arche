@@ -225,7 +225,7 @@ class Result:
         Returns:
             A list of Bar objects.
         """
-        data = []
+        data: List[go.Bar] = []
         for vc in values_counts:
             data = data + [
                 go.Bar(
