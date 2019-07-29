@@ -1,3 +1,5 @@
+from typing import Any
+
 from arche.readers.schema import TaggedFields
 from arche.rules.result import Result, Outcome
 from arche.tools.helpers import is_number, ratio_diff
@@ -74,13 +76,13 @@ def compare_prices_for_same_urls(
         missing and new `product_url_field` tagged fields.
     """
     result = Result("Compare Prices For Same Urls")
-    url_field = tagged_fields.get("product_url_field")
+    url_field: Any = tagged_fields.get("product_url_field")
     if not url_field:
         result.add_info(Outcome.SKIPPED)
         return result
 
     url_field = url_field[0]
-    price_field = tagged_fields.get("product_price_field")
+    price_field: Any = tagged_fields.get("product_price_field")
 
     source_df = source_df.dropna(subset=[url_field])
     target_df = target_df.dropna(subset=[url_field])
@@ -152,8 +154,8 @@ def compare_names_for_same_urls(
     compare `name_field` field"""
 
     result = Result("Compare Names Per Url")
-    url_field = tagged_fields.get("product_url_field")
-    name_field = tagged_fields.get("name_field")
+    url_field: Any = tagged_fields.get("product_url_field")
+    name_field: Any = tagged_fields.get("name_field")
     if not url_field or not name_field:
         result.add_info(Outcome.SKIPPED)
         return result
@@ -199,14 +201,14 @@ def compare_prices_for_same_names(
     source_df: pd.DataFrame, target_df: pd.DataFrame, tagged_fields: TaggedFields
 ):
     result = Result("Compare Prices For Same Names")
-    name_field = tagged_fields.get("name_field")
+    name_field: Any = tagged_fields.get("name_field")
     if not name_field:
         result.add_info(Outcome.SKIPPED)
         return result
 
     name_field = name_field[0]
 
-    product_url_field = tagged_fields.get("product_url_field")
+    product_url_field: Any = tagged_fields.get("product_url_field")
     if not product_url_field:
         result.add_info("product_url_field tag is not set")
     else:
@@ -242,7 +244,7 @@ def compare_prices_for_same_names(
     result.add_info(f"{len(same_names)} same names in both jobs")
 
     price_tag = "product_price_field"
-    price_field = tagged_fields.get(price_tag)
+    price_field: Any = tagged_fields.get(price_tag)
     if not price_field:
         result.add_info("product_price_field tag is not set")
         return result

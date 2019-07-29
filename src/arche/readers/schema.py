@@ -3,7 +3,7 @@ from enum import Enum
 import json
 import os
 import pprint
-from typing import Dict, List, Union
+from typing import Dict, List, Union, DefaultDict, cast
 import urllib.request
 
 from arche.tools import s3
@@ -58,17 +58,18 @@ class Schema:
     def get_enums(self) -> List[str]:
         enums = []
         for k, v in self.raw["properties"].items():
-            if "enum" in v.keys():
+            if "enum" in v.keys():  # type: ignore
                 enums.append(k)
         return enums
 
     @staticmethod
     def get_tags(schema: RawSchema) -> TaggedFields:
-        tagged_fields = defaultdict(list)
+        tagged_fields: DefaultDict[str, List[str]] = defaultdict(list)
         for key, value in schema["properties"].items():
-            property_tags = value.get("tag", [])
+            property_tags = value.get("tag", [])  # type: ignore
             if property_tags:
-                tagged_fields = Schema.get_field_tags(property_tags, key, tagged_fields)
+                tagged_fields = cast(
+                    DefaultDict[str, List[str]], Schema.get_field_tags(property_tags, key, tagged_fields))
         return tagged_fields
 
     @classmethod
