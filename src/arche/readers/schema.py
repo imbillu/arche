@@ -69,7 +69,7 @@ class Schema:
             property_tags = value.get("tag", [])
             if property_tags:
                 tagged_fields = Schema.get_field_tags(property_tags, key, tagged_fields)
-        return tagged_fields
+        return dict(tagged_fields)
 
     @classmethod
     def get_field_tags(

@@ -63,7 +63,6 @@ compare_prices_inputs = [
         {"price": [1.15, "2.3", 6], "url": ["http://1", "http://2", np.nan]},
         {"product_price_field": ["price"], "product_url_field": ["url"]},
         {
-            Level.INFO: [("2 same urls in both jobs",)],
             Level.ERROR: [
                 (
                     "2 checked, 2 errors",
@@ -74,7 +73,7 @@ compare_prices_inputs = [
                         "target price is 1.15 for 0"
                     ),
                 )
-            ],
+            ]
         },
     )
 ]
@@ -134,15 +133,6 @@ def test_compare_names_for_same_urls(
             {"name": ["Coffee", "Tea", "Wine"], "price": [4.0, 4.8, 20.0]},
             {"name_field": ["name"], "product_price_field": ["price"]},
             {
-                Level.INFO: [
-                    (
-                        "1 names missing from the tested job",
-                        None,
-                        {"Missing Wine": {2}},
-                    ),
-                    ("1 new names in the tested job",),
-                    ("2 same names in both jobs",),
-                ],
                 Level.ERROR: [
                     (
                         "2 checked, 1 errors",
@@ -151,7 +141,7 @@ def test_compare_names_for_same_urls(
                             "target price is 4.0 for 0"
                         ),
                     )
-                ],
+                ]
             },
         )
     ],

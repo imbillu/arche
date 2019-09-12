@@ -1,20 +1,21 @@
 from typing import List
 
-from arche.rules.result import Result
+from arche.readers.schema import TaggedFields
+from arche.rules.result import *
 import pandas as pd
 
 
 def fields(
     source_df: pd.DataFrame,
     target_df: pd.DataFrame,
-    fields: List[str],
+    names: List[str],
     err_thr: float = 0.25,
 ) -> Result:
-    """Return field values difference between jobs"""
+    """Return fields values difference between dataframes"""
 
     result = Result("Fields Difference")
 
-    for field in fields:
+    for field in names:
         source = source_df[field].dropna()
         target = target_df[field].dropna()
         same = source[source.isin(target)]
@@ -23,15 +24,13 @@ def fields(
             f"{len(source)} `non NaN {field}s` - {len(new)} new, {len(same)} same"
         )
         missing = target[~(target.isin(source))]
-        missing_values = missing.values
-        if len(missing_values) == 0:
+        if len(missing) == 0:
             continue
 
         if len(missing) < 6:
-            msg = ", ".join(missing_values.astype(str))
+            msg = ", ".join(missing.unique().astype(str))
         else:
-            missing_values = missing[:5].values
-            msg = f"{', '.join(missing_values.astype(str))}..."
+            msg = f"{', '.join(missing.unique()[:5].astype(str))}..."
         msg = f"{msg} `{field}s` are missing"
         if len(missing) / len(target_df) >= err_thr:
             result.add_error(
@@ -44,4 +43,25 @@ def fields(
                 errors={msg: set(missing.index)},
             )
 
+    return result
+
+
+def tagged_fields(
+    source_df: pd.DataFrame,
+    target_df: pd.DataFrame,
+    tagged_fields: TaggedFields,
+    tags: List[str],
+) -> Result:
+    """Compare fields tagged with `tags` between two dataframes."""
+    name = f"{', '.join(tags)} Fields Difference"
+    result = Result(name)
+    fields_names = list()
+    for tag in tags:
+        if tagged_fields.get(tag):
+            fields_names.extend(tagged_fields.get(tag))
+    if not fields_names:
+        result.add_info(Outcome.SKIPPED)
+        return result
+    result = fields(source_df, target_df, fields_names)
+    result.name = name
     return result
