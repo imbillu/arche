@@ -14,16 +14,23 @@ def fields(
     """Return fields values difference between dataframes"""
 
     result = Result("Fields Difference")
-
     for field in names:
         source = source_df[field].dropna()
         target = target_df[field].dropna()
-        same = source[source.isin(target)]
-        new = source[~(source.isin(target))]
+        try:
+            same = source[source.isin(target)]
+            new = source[~(source.isin(target))]
+            missing = target[~(target.isin(source))]
+        except SystemError:
+            source = source.apply(str)
+            target = target.apply(str)
+            same = source[source.isin(target)]
+            new = source[~(source.isin(target))]
+            missing = target[~(target.isin(source))]
+
         result.add_info(
             f"{len(source)} `non NaN {field}s` - {len(new)} new, {len(same)} same"
         )
-        missing = target[~(target.isin(source))]
         if len(missing) == 0:
             continue
 

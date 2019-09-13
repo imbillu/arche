@@ -9,7 +9,7 @@ import pytest
     [
         (
             {
-                "one": list(range(50)) + [42] * 50,
+                "one": list(range(50)) + ["42"] * 50,
                 "two": list(range(100)),
                 "three": [np.nan] * 50 + list(range(50)),
             },
@@ -21,7 +21,7 @@ import pytest
             ["one", "two", "three"],
             {
                 Level.INFO: [
-                    ("100 `non NaN ones` - 49 new, 51 same",),
+                    ("100 `non NaN ones` - 99 new, 1 same",),
                     (
                         "50 `ones` are missing",
                         None,
@@ -42,7 +42,34 @@ import pytest
                     )
                 ],
             },
-        )
+        ),
+        (
+            {
+                "four": [{i} for i in range(10)]
+                + [{"k": {"k": i}} for i in range(10)]
+                + ["l"] * 80
+            },
+            {
+                "four": [{i} for i in range(20)]
+                + [{"k": {"k": i}} for i in range(10)]
+                + ["l"] * 520
+            },
+            ["four"],
+            {
+                Level.INFO: [
+                    ("100 `non NaN fours` - 0 new, 100 same",),
+                    (
+                        "10 `fours` are missing",
+                        None,
+                        {
+                            "{10}, {11}, {12}, {13}, {14}... `fours` are missing": set(
+                                range(10, 20)
+                            )
+                        },
+                    ),
+                ]
+            },
+        ),
     ],
 )
 def test_fields(source, target, fields, expected):
