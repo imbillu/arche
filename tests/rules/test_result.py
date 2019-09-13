@@ -27,6 +27,37 @@ def test_message_not_eq(source, target):
 
 
 @pytest.mark.parametrize(
+    "errors, true_err_keys",
+    [
+        ({"a": {1, 2, 3}, "b": {2, 3, 4}}, {1, 2, 3, 4}),
+        ({"a": {"2"}, "b": {"3"}}, {"2", "3"}),
+        (None, set()),
+    ],
+)
+def test_message_err_keys(errors, true_err_keys):
+    assert Message("x", errors=errors).err_keys == true_err_keys
+
+
+@pytest.mark.parametrize(
+    "messages, true_err_keys",
+    [
+        (
+            {
+                Level.ERROR: [
+                    Message("x", errors={"a": {1, 2, 3}, "b": {2, 3}}),
+                    Message("x", errors={"a": {3, 5}, "b": {3}}),
+                ]
+            },
+            {1, 2, 3, 5},
+        ),
+        (dict(), set()),
+    ],
+)
+def test_result_err_keys(messages, true_err_keys):
+    assert Result("x", messages=messages).err_keys == true_err_keys
+
+
+@pytest.mark.parametrize(
     "source, target",
     [
         (
@@ -55,13 +86,12 @@ def test_tensors_not_equal(source, target):
 
 
 @pytest.mark.parametrize(
-    "message, stats, exp_md_output, exp_txt_outputs",
+    "message, stats, outputs",
     [
         (
             {Level.INFO: [("summary", "very detailed message")]},
             [pd.Series([1, 2], name="Fields coverage")],
-            "rule name here:",
-            ["\tsummary", "very detailed message"],
+            ["<h4>test show</h4>", "summary", "very detailed message"],
         ),
         (
             {Level.INFO: [("summary",)]},
@@ -70,20 +100,17 @@ def test_tensors_not_equal(source, target):
                     {"s": [0.25]}, index=["us"], name="Coverage for boolean fields"
                 )
             ],
-            "rule name here:",
-            ["\tsummary"],
+            ["<h4>test show</h4>", "summary"],
         ),
     ],
 )
-def test_show(mocker, capsys, message, stats, exp_md_output, exp_txt_outputs):
+def test_show(mocker, capsys, message, stats, outputs):
     mock_pio_show = mocker.patch("plotly.io.show", autospec=True)
     mocked_md = mocker.patch("arche.report.display_markdown", autospec=True)
-    mocked_print = mocker.patch("builtins.print", autospec=True)
-    res = create_result("rule name here", message, stats=stats)
+    res = create_result("test show", message, stats=stats)
     res.show()
     mock_pio_show.assert_called_once_with(res.figures[0])
-    mocked_md.assert_called_with(exp_md_output)
-    mocked_print.assert_has_calls(mocker.call(o) for o in exp_txt_outputs)
+    mocked_md.assert_has_calls(mocker.call(o) for o in outputs)
 
 
 @pytest.mark.parametrize(

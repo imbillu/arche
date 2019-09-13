@@ -17,19 +17,6 @@ SchemaSource = Union[str, RawSchema]
 TaggedFields = Dict[str, List[str]]
 
 
-def set_auth() -> None:
-    if "BITBUCKET_USER" in os.environ and "BITBUCKET_PASSWORD" in os.environ:
-        auth_handler = urllib.request.HTTPBasicAuthHandler()
-        auth_handler.add_password(
-            realm="Bitbucket.org HTTP",
-            uri="https://bitbucket.org",
-            user=os.getenv("BITBUCKET_USER"),
-            passwd=os.getenv("BITBUCKET_PASSWORD"),
-        )
-        opener = urllib.request.build_opener(auth_handler)
-        urllib.request.install_opener(opener)
-
-
 class Tag(Enum):
     unique = (0,)
     category = (1,)
@@ -118,6 +105,3 @@ class Schema:
     @staticmethod
     def from_url(path: str) -> RawSchema:
         return json.loads(s3.get_contents(path))
-
-
-set_auth()
