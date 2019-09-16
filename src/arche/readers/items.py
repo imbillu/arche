@@ -47,7 +47,7 @@ class Items:
         for column in self.df.columns:
             if column in new:
                 return column
-        return ''
+        return ""
 
     @classmethod
     def from_df(cls, df: pd.DataFrame):

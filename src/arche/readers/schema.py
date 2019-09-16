@@ -1,10 +1,8 @@
 from collections import defaultdict
 from enum import Enum
 import json
-import os
 import pprint
-from typing import Dict, List, Union, DefaultDict, cast
-import urllib.request
+from typing import Dict, List, Union, DefaultDict, cast, Tuple, Any, ItemsView
 
 from arche.tools import s3
 import perfect_jsonschema
@@ -44,19 +42,24 @@ class Schema:
 
     def get_enums(self) -> List[str]:
         enums = []
-        for k, v in self.raw["properties"].items():
-            if "enum" in v.keys():  # type: ignore
+        # self.raw["properties"].items() has type: 
+        # ItemsView[str, Union[str, bool, int, float, None, list[Any]]]
+        properties = cast(ItemsView[str, Dict[str, Any]], self.raw["properties"].items())
+        for k, v in properties:
+            if "enum" in v.keys():
                 enums.append(k)
         return enums
 
     @staticmethod
     def get_tags(schema: RawSchema) -> TaggedFields:
         tagged_fields: DefaultDict[str, List[str]] = defaultdict(list)
-        for key, value in schema["properties"].items():
-            property_tags = value.get("tag", [])  # type: ignore
+        # schema["properties"].items() has type: 
+        # ItemsView[str, Union[str, bool, int, float, None, list[Any]]]
+        properties = cast(ItemsView[str, Dict[str, Any]], schema["properties"].items())
+        for key, value in properties:
+            property_tags = value.get("tag", [])
             if property_tags:
-                tagged_fields = cast(
-                    DefaultDict[str, List[str]], Schema.get_field_tags(property_tags, key, tagged_fields))
+                tagged_fields: Dict[str, List[str]] = Schema.get_field_tags(property_tags, key, tagged_fields)
         return tagged_fields
 
     @classmethod

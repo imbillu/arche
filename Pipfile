@@ -14,6 +14,7 @@ fastjsonschema = "*"
 perfect-jsonschema = "*"
 tqdm = "*"
 ipywidgets = "*"
+mypy = "*"
 
 [dev-packages]
 jupyterlab = "*"
@@ -42,6 +43,7 @@ pyarrow = "*"
 cufflinks = "*"
 tables = "*"
 nb-black = "*"
+pylint = "*"
 
 [requires]
 python_version = "3.7"
