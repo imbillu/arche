@@ -1,12 +1,10 @@
 from functools import partial
 from typing import Dict
 
-from arche import SH_URL
-from arche.report import Report
+from arche.reports import Report
 from arche.rules.result import Level, Outcome, Result
 from colorama import Fore, Style
 from IPython.display import display_markdown
-import numpy as np
 import pandas as pd
 
 display_markdown = partial(display_markdown, raw=True)
@@ -99,21 +97,7 @@ class ReportMarkdown(Report):
                 f"{len(keys)} items affected - {attribute}: {sample}", raw=True
             )
 
-    @staticmethod
-    def sample_keys(keys: pd.Series, limit: int) -> str:
-        if len(keys) > limit:
-            sample = keys.sample(limit)
-        else:
-            sample = keys
-
-        def url(x: str) -> str:
-            if SH_URL in x:
-                return f"[{x.split('/')[-1]}]({x})"
-            key, number = x.rsplit("/", 1)
-            return f"[{number}]({SH_URL}/{key}/item/{number})"
-
-        # make links only for Cloud data
-        if keys.dtype == np.dtype("object") and "/" in keys.iloc[0]:
-            sample = sample.apply(url)
-
-        return ", ".join(sample.apply(str))
+    def display(self, short: bool = False) -> None:
+        self.report.write_summaries()
+        self.report.write("\n" * 2)
+        self.report.write_details(short)

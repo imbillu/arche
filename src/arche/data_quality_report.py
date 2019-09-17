@@ -7,7 +7,7 @@ from arche.figures import tables
 from arche.quality_estimation_algorithm import generate_quality_estimation
 from arche.readers.items import CloudItems
 from arche.readers.schema import Schema
-from arche.report import Report
+from arche.reports import Report
 import arche.rules.coverage as coverage_rules
 import arche.rules.duplicates as duplicate_rules
 import arche.rules.json_schema as schema_rules

@@ -5,7 +5,8 @@ from typing import Iterable, Optional, Union
 from arche.data_quality_report import DataQualityReport
 from arche.readers.items import Items, CollectionItems, JobItems, RawItems
 from arche.readers.schema import Schema, SchemaSource
-from arche.report import Report
+from arche.reports import ReportHtml
+from arche.reports import ReportMarkdown
 import arche.rules.category as category_rules
 import arche.rules.coverage as coverage_rules
 import arche.rules.duplicates as duplicate_rules
@@ -31,6 +32,7 @@ class Arche:
         start: Union[str, int] = None,
         filters: Optional[api.Filters] = None,
         expand: bool = None,
+        report: str = "markdown"
     ):
         """
         Args:
@@ -41,6 +43,7 @@ class Arche:
             start: an item key to start reading from
             filters: Scrapinghub filtering, see
             https://python-scrapinghub.readthedocs.io/en/latest/client/apidocs.html#scrapinghub.client.items.Items # noqa
+            report: the report type that will be generated. It can be "markdown" or "html"
         """
         if expand:
             maintenance.deprecate(
@@ -71,7 +74,16 @@ class Arche:
         self.filters = filters
         self._source_items = None
         self._target_items = None
-        self.report = Report()
+
+        self._set_report(report)
+
+    def _set_report(self, report: str):
+        if report == "markdown":
+            self.report = ReportMarkdown()
+        elif report == "html":
+            self.report = ReportHtml()
+        else:
+            raise NotImplementedError("{} is not a valid report type".format(report))
 
     @property
     def source_items(self):
@@ -125,10 +137,10 @@ class Arche:
 
     def report_all(self, short: bool = False) -> None:
         self.run_all_rules()
+
+    def report_display(self, short: bool = False) -> None:
         IPython.display.clear_output()
-        self.report.write_summaries()
-        self.report.write("\n" * 2)
-        self.report.write_details(short)
+        self.report.display()
 
     def run_all_rules(self):
         if isinstance(self.source_items, JobItems):

@@ -1,0 +1,179 @@
+<html>
+  <head>
+    <!-- Tabs from https://www.cssscript.com/creating-a-stylish-tabs-control-using-pure-css-css3/ -->
+    <style>
+      summary {
+	  background-color: white;
+	  cursor: pointer;
+	  padding: 18px;
+	  width: 100%;
+	  border: none;
+	  text-align: left;
+	  outline: none;
+	  font-size: 30px;
+      }
+      .no-messages::-webkit-details-marker {
+	  display: none;
+      }
+
+
+      article > details > summary {
+	  margin-top: 25px;
+      }
+
+      .Skipped {
+	  background-color: lightgray;
+      }
+
+      .Passed {
+	  background-color: mediumseagreen;
+      }
+
+      .Warning {
+	  background-color: khaki;
+      }
+
+      .Failed {
+	  background-color: tomato;
+      }
+
+      .message {
+	  padding: 18px;
+      }
+
+      * { box-sizing: border-box; }
+
+      .tabs {
+	  position: relative;
+	  margin: 3rem 0;
+	  background: #99A3A4;
+	  height: 14.75rem;
+      }
+      
+      .tabs::before,
+      .tabs::after {
+	  content: "";
+	  display: table;
+      }
+
+      .tabs::after { clear: both; }
+
+      .tab { float: left; }
+
+      .tab-switch { display: none; }
+
+      .tab-label {
+	  position: relative;
+	  display: block;
+	  line-height: 2.75em;
+	  height: 3em;
+	  padding: 0 1.618em;
+	  background: #95A5A6;
+	  border-right: 0.125rem solid #99A3A4;
+	  color: #fff;
+	  cursor: pointer;
+	  top: 0;
+	  transition: all 0.25s;
+      }
+
+      .tab-label:hover {
+	  top: -0.25rem;
+	  transition: all 0.25s;
+      }
+
+      .tab-content {
+	  background: #fff;
+	  color: #2c3e50;
+	  border-bottom: 0.25rem solid #bdc3c7;
+	  height: 12rem;
+	  position: absolute;
+	  z-index: 1;
+	  top: 2.75em;
+	  left: 0;
+	  opacity: 0;
+	  transition: all 0.35s;
+      }
+
+      .tab-switch:checked + .tab-label {
+	  background: #fff;
+	  color: #2c3e50;
+	  border-bottom: 0;
+	  border-right: 0.0625rem solid #fff;
+	  transition: all 0.35s;
+	  z-index: 2;
+	  top: -0.0625rem;
+      }
+
+      .tab-switch:checked + .tab-label:hover { top: -0.0625rem; }
+
+      .tab-switch:checked + .tab-label + .tab-content {
+	  opacity: 1;
+	  transition: all 0.35s;
+	  z-index: 3;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Define macros to render the report -->
+    {% macro to_clickable_urls(message) %}
+       {{ message|linkify|safe }}
+    {% endmacro %}
+
+    {% macro render_stats(rule) %}
+       {% if rule._stats %}
+          {% set stats = pd.DataFrame(rule._stats[0]) %}
+          {{ stats.to_html()|safe }}
+       {% endif %}
+    {% endmacro %}
+
+    {% macro render_figure(rule) %}
+       {% if rule._figures %}
+          {{ rule._figures[0] }}
+       {% endif %}
+    {% endmacro %}
+    
+    {% macro render_rule(rule) %}
+      <details>
+	<summary class="{{rule_outcome(rule)}}">{{ rule.name }} - {{ rule_outcome(rule) }}</summary>
+	  {% for outcome, messages in rule.messages.items() %}
+	     {{ render_messages(outcome, messages) }}
+          {% endfor %}
+        {{ render_stats(rule) }}
+	
+      </details>
+    {% endmacro %}
+    {% macro render_messages(outcome, messages) %}
+      {% for message in messages %}
+         <div class="message"> 
+           <p> {{ message.summary|string|linkify|safe }} </p>
+	 </div>
+      {% endfor %}
+    {% endmacro %}
+
+     <!-- Renders the page -->
+	 <div class="tabs">
+	   <div class="tab">
+             <input type="radio" name="css-tabs" id="tab-rules" checked class="tab-switch">
+	     <label for="tab-rules" class="tab-label">Rules Outcome</label>
+	     <div class="tab-content">
+	       {% for rule in rules %}
+                  {{ render_rule(rule) }}
+	       {% endfor %}
+	     </div>
+	   </div>
+
+	   <div class="tab">
+             <input type="radio" name="css-tabs" id="tab-plots" class="tab-switch">
+	     <label for="tab-plots" class="tab-label">Plots</label>
+	     <div class="tab-content">
+	       {% for rule in rules %}
+	          {{ render_figure(rule) }}
+	       {% endfor %}
+	     </div>
+	   </div>
+	 </div>
+    </div>
+  </body>
+</html>
+
+    
