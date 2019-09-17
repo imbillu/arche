@@ -42,9 +42,11 @@ class Schema:
 
     def get_enums(self) -> List[str]:
         enums = []
-        # self.raw["properties"].items() has type: 
+        # self.raw["properties"].items() has type:
         # ItemsView[str, Union[str, bool, int, float, None, list[Any]]]
-        properties = cast(ItemsView[str, Dict[str, Any]], self.raw["properties"].items())
+        properties = cast(
+            ItemsView[str, Dict[str, Any]], self.raw["properties"].items()
+        )
         for k, v in properties:
             if "enum" in v.keys():
                 enums.append(k)
@@ -52,19 +54,19 @@ class Schema:
 
     @staticmethod
     def get_tags(schema: RawSchema) -> TaggedFields:
-        tagged_fields: DefaultDict[str, List[str]] = defaultdict(list)
-        # schema["properties"].items() has type: 
+        tagged_fields: Dict[str, List[str]] = defaultdict(list)
+        # schema["properties"].items() has type:
         # ItemsView[str, Union[str, bool, int, float, None, list[Any]]]
         properties = cast(ItemsView[str, Dict[str, Any]], schema["properties"].items())
         for key, value in properties:
             property_tags = value.get("tag", [])
             if property_tags:
-                tagged_fields: Dict[str, List[str]] = Schema.get_field_tags(property_tags, key, tagged_fields)
+                tagged_fields = Schema.get_field_tags(property_tags, key, tagged_fields)
         return tagged_fields
 
     @classmethod
     def get_field_tags(
-        cls, tags: List[str], field: str, tagged_fields: defaultdict
+        cls, tags: List[str], field: str, tagged_fields: Dict
     ) -> TaggedFields:
         tags = cls.parse_tag(tags)
         if not tags:
