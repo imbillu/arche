@@ -1,4 +1,5 @@
 from typing import Dict, List
+
 from arche import arche, SH_URL
 from arche.arche import Arche
 from arche.rules.result import Level
