@@ -2,7 +2,7 @@ from collections import defaultdict
 from enum import Enum
 import json
 import pprint
-from typing import Dict, List, Union, DefaultDict, cast, Tuple, Any, ItemsView
+from typing import Dict, List, Union, cast, Any, ItemsView
 
 from arche.tools import s3
 import perfect_jsonschema

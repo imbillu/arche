@@ -211,8 +211,8 @@ def create_result(
     items_count: Optional[int] = None,
 ) -> Result:
     result = Result(rule_name)
-    for level, messages in messages.items():
-        for message in messages:
+    for level, messages_list in messages.items():
+        for message in messages_list:
             result.add_message(level, *message)
 
     if stats:

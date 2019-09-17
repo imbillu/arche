@@ -110,11 +110,11 @@ def compare_prices_for_same_urls(
     result.add_info(f"{len(same_urls)} same urls in both jobs")
 
     diff_prices_count = 0
-    price_field = tagged_fields.get("product_price_field")
-    if not price_field:
+    price_field_tag = tagged_fields.get("product_price_field")
+    if not price_field_tag:
         result.add_info("product_price_field tag is not set")
     else:
-        price_field = price_field[0]
+        price_field = price_field_tag[0]
         detailed_messages = []
         for url in same_urls:
             if url.strip() != "nan":
@@ -202,12 +202,12 @@ def compare_prices_for_same_names(
     source_df: pd.DataFrame, target_df: pd.DataFrame, tagged_fields: TaggedFields
 ):
     result = Result("Compare Prices For Same Names")
-    name_field = tagged_fields.get("name_field")
-    if not name_field:
+    name_field_tag = tagged_fields.get("name_field")
+    if not name_field_tag:
         result.add_info(Outcome.SKIPPED)
         return result
 
-    name_field = name_field[0]
+    name_field = name_field_tag[0]
     source_df = source_df[source_df[name_field].notnull()]
     target_df = target_df[target_df[name_field].notnull()]
 
@@ -234,12 +234,12 @@ def compare_prices_for_same_names(
     result.add_info(f"{len(same_names)} same names in both jobs")
 
     price_tag = "product_price_field"
-    price_field = tagged_fields.get(price_tag)
-    if not price_field:
+    price_field_tag = tagged_fields.get(price_tag)
+    if not price_field_tag:
         result.add_info("product_price_field tag is not set")
         return result
 
-    price_field = price_field[0]
+    price_field = price_field_tag[0]
     count = 0
 
     detailed_messages = []

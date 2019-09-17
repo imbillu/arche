@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 import itertools
 import math
-from typing import Dict, List, Optional, Set, Union
+from typing import Dict, List, Optional, Set, Union, cast
 
 import IPython
 import numpy as np
@@ -40,7 +40,11 @@ class Message:
     summary: str
     detailed: Optional[str] = None
     errors: Optional[Dict[str, Set]] = None
-    _err_keys: Optional[Set[Union[str, int]]] = field(default_factory=set)
+
+    # expression "field(default_factory=set)" has type "Set[_T]", so we have to cast
+    _err_keys: Optional[Set[Union[str, int]]] = cast(
+        Optional[Set[Union[str, int]]], field(default_factory=set)
+    )
 
     @property
     def err_keys(self):
