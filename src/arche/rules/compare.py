@@ -5,6 +5,9 @@ from arche.rules.result import *
 import pandas as pd
 
 
+MAX_MISSING_VALUES = 6
+
+
 def fields(
     source_df: pd.DataFrame,
     target_df: pd.DataFrame,
@@ -22,8 +25,8 @@ def fields(
             new = source[~(source.isin(target))]
             missing = target[~(target.isin(source))]
         except SystemError:
-            source = source.apply(str)
-            target = target.apply(str)
+            source = source.astype(str)
+            target = target.astype(str)
             same = source[source.isin(target)]
             new = source[~(source.isin(target))]
             missing = target[~(target.isin(source))]
@@ -34,7 +37,7 @@ def fields(
         if len(missing) == 0:
             continue
 
-        if len(missing) < 6:
+        if len(missing) < MAX_MISSING_VALUES:
             msg = ", ".join(missing.unique().astype(str))
         else:
             msg = f"{', '.join(missing.unique()[:5].astype(str))}..."
