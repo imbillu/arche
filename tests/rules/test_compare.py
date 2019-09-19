@@ -5,7 +5,7 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    ["source", "target", "fields", "expected"],
+    ["source", "target", "fields", "normalize", "expected"],
     [
         (
             {
@@ -19,6 +19,7 @@ import pytest
                 "three": [np.nan] * 500 + list(range(50)),
             },
             ["one", "two", "three"],
+            False,
             {
                 Level.INFO: [
                     ("100 `non NaN ones` - 99 new, 1 same",),
@@ -46,15 +47,16 @@ import pytest
         (
             {
                 "four": [{i} for i in range(10)]
-                + [{"k": {"k": i}} for i in range(10)]
+                + [{"K": {"k": i}} for i in range(10)]
                 + ["l"] * 80
             },
             {
                 "four": [{i} for i in range(20)]
                 + [{"k": {"k": i}} for i in range(10)]
-                + ["l"] * 520
+                + ["L"] * 520
             },
             ["four"],
+            True,
             {
                 Level.INFO: [
                     ("100 `non NaN fours` - 0 new, 100 same",),
@@ -72,7 +74,7 @@ import pytest
         ),
     ],
 )
-def test_fields(source, target, fields, expected):
+def test_fields(source, target, fields, normalize, expected):
     assert compare.fields(
-        pd.DataFrame(source), pd.DataFrame(target), fields
+        pd.DataFrame(source), pd.DataFrame(target), fields, normalize
     ) == create_result("Fields Difference", expected)

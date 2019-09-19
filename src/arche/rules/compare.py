@@ -1,8 +1,5 @@
-from typing import List
-
 from arche.readers.schema import TaggedFields
 from arche.rules.result import *
-import pandas as pd
 
 
 MAX_MISSING_VALUES = 6
@@ -12,24 +9,41 @@ def fields(
     source_df: pd.DataFrame,
     target_df: pd.DataFrame,
     names: List[str],
+    normalize: bool = False,
     err_thr: float = 0.25,
 ) -> Result:
-    """Return fields values difference between dataframes"""
+    """Return fields values difference between dataframe.
+
+    Args:
+        names - a list of field names
+        normalize - if set, all fields converted to str and processed with lower() and strip()
+
+    Returns:
+        Result with same, missing and new values.
+    """
+
+    def get_difference(
+        left: pd.Series, right: pd.Series
+    ) -> (pd.Series, pd.Series, pd.Series):
+        return (
+            left[left.isin(right)],
+            left[~(left.isin(right))],
+            right[~(right.isin(left))],
+        )
 
     result = Result("Fields Difference")
     for field in names:
         source = source_df[field].dropna()
         target = target_df[field].dropna()
+        if normalize:
+            source = source.astype(str).str.lower().str.strip()
+            target = target.astype(str).str.lower().str.strip()
         try:
-            same = source[source.isin(target)]
-            new = source[~(source.isin(target))]
-            missing = target[~(target.isin(source))]
+            same, new, missing = get_difference(source, target)
         except SystemError:
             source = source.astype(str)
             target = target.astype(str)
-            same = source[source.isin(target)]
-            new = source[~(source.isin(target))]
-            missing = target[~(target.isin(source))]
+            same, new, missing = get_difference(source, target)
 
         result.add_info(
             f"{len(source)} `non NaN {field}s` - {len(new)} new, {len(same)} same"
