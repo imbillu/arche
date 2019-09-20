@@ -5,8 +5,7 @@ from typing import Iterable, Optional, Union
 from arche.data_quality_report import DataQualityReport
 from arche.readers.items import Items, CollectionItems, JobItems, RawItems
 from arche.readers.schema import Schema, SchemaSource
-from arche.reports import ReportHtml
-from arche.reports import ReportMarkdown
+from arche.report import Report
 import arche.rules.category as category_rules
 import arche.rules.coverage as coverage_rules
 import arche.rules.duplicates as duplicate_rules
@@ -32,7 +31,6 @@ class Arche:
         start: Union[str, int] = None,
         filters: Optional[api.Filters] = None,
         expand: bool = None,
-        report: str = "markdown"
     ):
         """
         Args:
@@ -43,7 +41,6 @@ class Arche:
             start: an item key to start reading from
             filters: Scrapinghub filtering, see
             https://python-scrapinghub.readthedocs.io/en/latest/client/apidocs.html#scrapinghub.client.items.Items # noqa
-            report: the report type that will be generated. It can be "markdown" or "html"
         """
         if expand:
             maintenance.deprecate(
@@ -74,16 +71,7 @@ class Arche:
         self.filters = filters
         self._source_items = None
         self._target_items = None
-
-        self._set_report(report)
-
-    def _set_report(self, report: str):
-        if report == "markdown":
-            self.report = ReportMarkdown()
-        elif report == "html":
-            self.report = ReportHtml()
-        else:
-            raise NotImplementedError("{} is not a valid report type".format(report))
+        self.report = Report()
 
     @property
     def source_items(self):
@@ -135,10 +123,8 @@ class Arche:
     def save_result(self, rule_result):
         self.report.save(rule_result)
 
-    def report_all(self, short: bool = False) -> None:
+    def report_all(self) -> None:
         self.run_all_rules()
-
-    def report_display(self, short: bool = False) -> None:
         IPython.display.clear_output()
         self.report.display()
 
@@ -237,7 +223,6 @@ class Arche:
     @lru_cache(maxsize=32)
     def compare_metadata(self, source_job, target_job):
         self.save_result(metadata_rules.compare_spider_names(source_job, target_job))
-        self.save_result(metadata_rules.check_errors(source_job, target_job))
         self.save_result(
             metadata_rules.compare_number_of_scraped_items(source_job, target_job)
         )

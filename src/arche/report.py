@@ -1,103 +1,66 @@
-from functools import partial
 from typing import Dict
 
 from arche import SH_URL
-from arche.report import Report
-from arche.rules.result import Level, Outcome, Result
-from colorama import Fore, Style
-from IPython.display import display_markdown
-import numpy as np
+from arche.rules.result import Level, Result
+
 import pandas as pd
+import numpy as np
 
-display_markdown = partial(display_markdown, raw=True)
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+from bleach import linkify
+
+from IPython.display import HTML, display
 
 
-class ReportMarkdown(Report):
+class Report:
     def __init__(self):
         self.results: Dict[str, Result] = {}
+
+        self.env = Environment(
+            loader=FileSystemLoader('arche/templates/'),
+            autoescape=select_autoescape(['html']),
+        )
+        self.env.filters['linkify'] = linkify
+        self.env.filters['pd'] = pd
 
     def save(self, result: Result) -> None:
         self.results[result.name] = result
 
-    @staticmethod
-    def write_color_text(text: str, color: Fore = Fore.RED) -> None:
-        print(color + text + Style.RESET_ALL)
-
-    @staticmethod
-    def write_rule_name(rule_name: str) -> None:
-        display_markdown(f"{rule_name}:")
-
-    @classmethod
-    def write(cls, text: str) -> None:
-        print(text)
-
-    def write_summaries(self) -> None:
-        for result in self.results.values():
-            self.write_summary(result)
-
-    @classmethod
-    def write_summary(cls, result: Result) -> None:
-        cls.write_rule_name(result.name)
-        if not result.messages:
-            cls.write_rule_outcome(Outcome.PASSED, Level.INFO)
-        for level, rule_msgs in result.messages.items():
-            for rule_msg in rule_msgs:
-                cls.write_rule_outcome(rule_msg.summary, level)
-
-    @classmethod
-    def write_rule_outcome(cls, outcome: str, level: Level = Level.INFO) -> None:
-        if isinstance(outcome, Outcome):
-            outcome = outcome.name
-        msg = f"\t{outcome}"
-        if level == Level.ERROR:
-            cls.write_color_text(msg)
-        elif level == Level.WARNING:
-            cls.write_color_text(msg, color=Fore.YELLOW)
-        elif outcome == Outcome.PASSED.name:
-            cls.write_color_text(msg, color=Fore.GREEN)
+    def _rule_outcome(self, rule) -> str:
+        """
+        Returns the outcome status of a given rule
+        """
+        if not rule.messages:
+            return "Passed"
+        message_level = rule.messages.keys()
+        if any([level.value == Level.ERROR.value for level in message_level]):
+            return "Failed"
+        elif any([level.value == Level.WARNING.value for level in message_level]):
+            return "Warning"
         else:
-            cls.write(msg)
+            return "Skipped"
 
-    def write_details(self, short: bool = False, keys_limit: int = 10) -> None:
-        for result in self.results.values():
-            if result.detailed_messages_count:
-                display_markdown(
-                    f"{result.name} ({result.detailed_messages_count} message(s)):"
-                )
-                self.write_rule_details(result, short, keys_limit)
-            for f in result.figures:
-                f.show()
-            display_markdown("<br>")
+    def _order_rules(self, rules):
+        """
+        Returns an ordered list of Results
+        """
+        RULE_ORDER = ["Passed", "Failed", "Warning", "Skipped"]
+        rules = sorted([(RULE_ORDER.index(self._rule_outcome(rule)), rule) for rule in rules],
+                       key=lambda x: x[0]
+                       )
+        return [rule[1] for rule in rules]
 
-    @classmethod
-    def write_rule_details(
-        cls, result: Result, short: bool = False, keys_limit: int = 10
-    ) -> None:
-        for rule_msgs in result.messages.values():
-            for rule_msg in rule_msgs:
-                if rule_msg.errors:
-                    cls.write_detailed_errors(rule_msg.errors, short, keys_limit)
-                elif rule_msg.detailed:
-                    cls.write(rule_msg.detailed)
+    def display(self) -> None:
+        for f in self.results.values():
+            f.figures
 
-    @classmethod
-    def write_detailed_errors(cls, errors: Dict, short: bool, keys_limit: int) -> None:
-        error_messages = sorted(errors.items(), key=lambda i: len(i[1]), reverse=True)
-
-        if short:
-            keys_limit = 5
-            error_messages = error_messages[:5]
-
-        for attribute, keys in error_messages:
-            if isinstance(keys, list):
-                keys = pd.Series(keys)
-            if isinstance(keys, set):
-                keys = pd.Series(list(keys))
-
-            sample = Report.sample_keys(keys, keys_limit)
-            display_markdown(
-                f"{len(keys)} items affected - {attribute}: {sample}", raw=True
-            )
+        template = self.env.get_template('template.html')
+        resultHTML = template.render(
+            rules=list(self._order_rules(self.results.values())),
+            rule_outcome=self._rule_outcome,
+            pd=pd,
+        )
+        display(HTML(resultHTML), metadata={"isolated": True})
 
     @staticmethod
     def sample_keys(keys: pd.Series, limit: int) -> str:
