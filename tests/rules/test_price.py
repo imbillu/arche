@@ -1,6 +1,6 @@
 import arche.rules.price as p
 from arche.rules.result import Level, Outcome
-from conftest import create_result
+from conftest import *
 import numpy as np
 import pandas as pd
 import pytest
@@ -51,9 +51,11 @@ was_now_inputs = [
 @pytest.mark.parametrize("data, tagged_fields, expected_messages", was_now_inputs)
 def test_compare_was_now(data, tagged_fields, expected_messages):
     df = pd.DataFrame(data)
-    result = p.compare_was_now(df, tagged_fields)
-    assert result == create_result(
-        "Compare Price Was And Now", expected_messages, items_count=len(df)
+    assert_results_equal(
+        p.compare_was_now(df, tagged_fields),
+        create_result(
+            "Compare Price Was And Now", expected_messages, items_count=len(df)
+        ),
     )
 
 
@@ -88,7 +90,9 @@ def test_compare_prices_for_same_urls(
     result = p.compare_prices_for_same_urls(
         pd.DataFrame(source_data), pd.DataFrame(target_data), tagged_fields
     )
-    assert result == create_result("Compare Prices For Same Urls", expected_messages)
+    assert_results_equal(
+        result, create_result("Compare Prices For Same Urls", expected_messages)
+    )
 
 
 compare_names_inputs = [
@@ -122,7 +126,9 @@ def test_compare_names_for_same_urls(
     result = p.compare_names_for_same_urls(
         pd.DataFrame(source_data), pd.DataFrame(target_data), tagged_fields
     )
-    assert result == create_result("Compare Names Per Url", expected_messages)
+    assert_results_equal(
+        result, create_result("Compare Names Per Url", expected_messages)
+    )
 
 
 @pytest.mark.parametrize(
@@ -152,4 +158,6 @@ def test_compare_prices_for_same_names(
     result = p.compare_prices_for_same_names(
         pd.DataFrame(source_data), pd.DataFrame(target_data), tagged_fields
     )
-    assert result == create_result("Compare Prices For Same Names", expected_messages)
+    assert_results_equal(
+        result, create_result("Compare Prices For Same Names", expected_messages)
+    )
