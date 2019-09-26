@@ -45,6 +45,10 @@ def fields(
             target = target.astype(str)
             same, new, missing = get_difference(source, target)
 
+        same.name, new.name, missing.name = (None, None, None)
+        result.more_stats.update(
+            {f"{field}": {"same": same, "new": new, "missing": missing}}
+        )
         result.add_info(
             f"{len(source)} `non NaN {field}s` - {len(new)} new, {len(same)} same"
         )
@@ -66,7 +70,6 @@ def fields(
                 f"{len(missing)} `{field}s` are missing",
                 errors={msg: set(missing.index)},
             )
-
     return result
 
 
