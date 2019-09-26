@@ -12,7 +12,6 @@ boto3 = "*"
 jsonschema = "*"
 fastjsonschema = "*"
 perfect-jsonschema = "*"
-colorama = "*"
 tqdm = "*"
 ipywidgets = "*"
 Jinja2== "*"
@@ -44,6 +43,8 @@ matplotlib = "*"
 pyarrow = "*"
 cufflinks = "*"
 tables = "*"
+nb-black = "*"
+
 [requires]
 python_version = "3.7"
 
