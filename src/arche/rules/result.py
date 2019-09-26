@@ -25,6 +25,18 @@ class Outcome(Enum):
     SKIPPED = 0
     PASSED = 1
     FAILED = 2
+    WARNING = 3
+
+    def __eq__(self, other):
+        if isinstance(other, Outcome):
+            return self.value == other.value
+        return NotImplemented
+
+    def __ne__(self, other):
+        result = self.__eq__(other)
+        if result is NotImplemented:
+            return result
+        return not result
 
 
 @dataclass
@@ -102,6 +114,21 @@ class Result:
     @property
     def warnings(self):
         return self.messages.get(Level.WARNING)
+
+    @property
+    def outcome(self) -> Outcome:
+        """
+        Returns the outcome status of a given rule
+        """
+        if not self.messages:
+            return Outcome.PASSED
+        message_level = self.messages.keys()
+        if any([level.value == Level.ERROR.value for level in message_level]):
+            return Outcome.FAILED
+        elif any([level.value == Level.WARNING.value for level in message_level]):
+            return Outcome.WARNING
+        else:
+            return Outcome.SKIPPED
 
     @property
     def errors(self):

@@ -23,18 +23,22 @@
 
       .Skipped {
 	  background-color: lightgray;
+	  opacity: 0.9;
       }
 
       .Passed {
 	  background-color: mediumseagreen;
+	  opacity: 0.9;
       }
 
       .Warning {
 	  background-color: khaki;
+	  opacity: 0.9;
       }
 
       .Failed {
 	  background-color: tomato;
+	  opacity: 0.9;
       }
 
       .message {
@@ -134,7 +138,7 @@
     
     {% macro render_rule(rule) %}
       <details>
-	<summary class="{{rule_outcome(rule)}}">{{ rule.name }} - {{ rule_outcome(rule) }}</summary>
+	<summary class="{{rule.outcome.name}}">{{ rule.name }} - {{ rule.outcome.name }}</summary>
 	  {% for outcome, messages in rule.messages.items() %}
 	     {{ render_messages(outcome, messages) }}
           {% endfor %}
