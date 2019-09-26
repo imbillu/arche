@@ -2,7 +2,7 @@ from collections import defaultdict
 from enum import Enum
 import json
 import pprint
-from typing import Dict, List, Union, cast, Any, ItemsView
+from typing import Dict, List, Union, cast, Any, ItemsView, Set
 
 from arche.tools import s3
 import perfect_jsonschema
@@ -66,7 +66,7 @@ class Schema:
 
     @classmethod
     def get_field_tags(
-        cls, tags: List[str], field: str, tagged_fields: Dict
+        cls, tags: Set[Any], field: str, tagged_fields: Dict
     ) -> TaggedFields:
         tags = cls.parse_tag(tags)
         if not tags:

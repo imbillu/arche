@@ -5,7 +5,7 @@ from typing import Optional, List
 
 from arche.figures import tables
 from arche.quality_estimation_algorithm import generate_quality_estimation
-from arche.readers.items import CloudItems
+from arche.readers.items import JobItems
 from arche.readers.schema import Schema
 from arche.report import Report
 import arche.rules.coverage as coverage_rules
@@ -23,7 +23,7 @@ import plotly.io as pio
 class DataQualityReport:
     def __init__(
         self,
-        items: CloudItems,
+        items: JobItems,
         schema: Schema,
         report: Report,
         bucket: Optional[str] = None,
@@ -44,11 +44,11 @@ class DataQualityReport:
         if bucket:
             self.save_report_to_bucket(
                 project_id=items.key.split("/")[0],
-                spider=items.job.metadata.get("spider"),  # type: ignore
+                spider=items.job.metadata.get("spider"),
                 bucket=bucket,
             )
 
-    def create_figures(self, items: CloudItems):
+    def create_figures(self, items: JobItems):
         name_url_dups = self.report.results.get(
             "Duplicates By **name_field, product_url_field** Tags",
             duplicate_rules.find_by_name_url(items.df, self.schema.tags),
@@ -63,7 +63,7 @@ class DataQualityReport:
         no_of_price_warns = price_was_now_result.err_items_count
         no_of_checked_price_items = price_was_now_result.items_count
 
-        crawlera_user = api.get_crawlera_user(items.job)  # type: ignore
+        crawlera_user = api.get_crawlera_user(items.job)
 
         validation_errors = self.report.results.get(
             "JSON Schema Validation",
@@ -77,7 +77,7 @@ class DataQualityReport:
         )
 
         quality_estimation, field_accuracy = generate_quality_estimation(
-            items.job,  # type: ignore
+            items.job,
             crawlera_user,
             validation_errors,
             name_url_dups.err_items_count,
@@ -91,7 +91,7 @@ class DataQualityReport:
         )
 
         self.score_table(quality_estimation, field_accuracy)
-        self.job_summary_table(items.job)  # type: ignore
+        self.job_summary_table(items.job)
         self.rules_summary_table(
             items.df,
             validation_errors,

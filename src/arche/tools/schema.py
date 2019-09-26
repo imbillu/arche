@@ -134,7 +134,7 @@ def format_validation_message(
     error_msg: str, path: Deque, schema_path: Deque, validator: str
 ) -> str:
     str_path = "/".join(p for p in path if isinstance(p, str))
-    schema_path = "/".join(p for p in schema_path)  # type: ignore
+    schema_path = "/".join(p for p in schema_path)
 
     if validator == "anyOf":
         if str_path:

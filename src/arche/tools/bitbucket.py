@@ -23,7 +23,7 @@ def prepare_request(url: str) -> urllib.request.Request:
 def convert_to_api_url(url: str, netloc: str, api_netloc: str) -> str:
     """Support both regular and raw URLs"""
     try:
-        user, repo, path = re.search(
+        user, repo, path = re.search(  # type: ignore
             f"https://{netloc}/(.*?)/(.*?)/(?:raw|src)/(.*)", url
         ).groups()
     except AttributeError:

@@ -140,7 +140,7 @@ class Arche:
         self.run_schema_rules()
 
     def data_quality_report(self, bucket: Optional[str] = None):
-        if helpers.is_collection_key(str(self.source or '')):
+        if helpers.is_collection_key(str(self.source or "")):
             raise ValueError("Collections are not supported")
         if not self.schema:
             raise ValueError("Schema is empty")
