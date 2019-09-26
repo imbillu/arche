@@ -126,7 +126,7 @@ class Arche:
     def report_all(self) -> None:
         self.run_all_rules()
         IPython.display.clear_output()
-        self.report.display()
+        self.report()
 
     def run_all_rules(self):
         if isinstance(self.source_items, JobItems):
@@ -164,7 +164,7 @@ class Arche:
             self.schema.raw, self.source_items.raw, self.source_items.df.index
         )
         self.save_result(res)
-        res.show()
+        self.report(res)
 
     def glance(self) -> None:
         """Run JSON schema check and output results. In most cases it will return
@@ -223,6 +223,7 @@ class Arche:
     @lru_cache(maxsize=32)
     def compare_metadata(self, source_job, target_job):
         self.save_result(metadata_rules.compare_spider_names(source_job, target_job))
+        self.save_result(metadata_rules.check_errors(source_job, target_job))
         self.save_result(
             metadata_rules.compare_number_of_scraped_items(source_job, target_job)
         )

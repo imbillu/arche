@@ -208,14 +208,14 @@ class Result:
             ]
         )
 
-    def show(self, short: bool = False, keys_limit: int = 10):
+    def show(self, keys_limit: int = 10):
         from arche.report import Report
-
+        report = Report()
         IPython.display.clear_output()
-        Report.write_summary(self)
-        Report.write_rule_details(self, short=short, keys_limit=keys_limit)
+        report.save(self)
         for f in self.figures:
             f.show()
+        report(self)
 
     @staticmethod
     def create_figures(stats: List[Stat], name: str) -> List[go.FigureWidget]:

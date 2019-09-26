@@ -11,7 +11,7 @@ import pandas as pd
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from bleach import linkify
 
-from IPython.display import HTML, display
+from IPython.display import HTML, display_html
 
 
 class Report:
@@ -38,16 +38,24 @@ class Report:
                        )
         return [rule[1] for rule in rules]
 
-    def __call__(self) -> None:
+    def __call__(self, rule: Result = None) -> None:
+
         for f in self.results.values():
             f.figures
 
-        template = self.env.get_template('template.html')
-        resultHTML = template.render(
-            rules=list(self._order_rules(self.results.values())),
-            pd=pd,
-        )
-        display(HTML(resultHTML), metadata={"isolated": True})
+        if not rule:
+            template = self.env.get_template('template-full-report.html')
+            resultHTML = template.render(
+                rules=list(self._order_rules(self.results.values())),
+                pd=pd,
+            )
+        else:
+            template = self.env.get_template('template-single-rule.html')
+            resultHTML = template.render(
+                rule=rule,
+                pd=pd,
+            )
+        display_html(resultHTML, raw=True, metadata={"isolated": True})
 
     @staticmethod
     def sample_keys(keys: pd.Series, limit: int) -> str:
