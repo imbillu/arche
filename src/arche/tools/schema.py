@@ -1,9 +1,9 @@
 from collections import defaultdict
 import random
-from typing import Any, Deque, Dict, List, Optional, DefaultDict
+from typing import Any, Deque, Dict, List, Optional, DefaultDict, Union
 
 from arche.readers.items import RawItems
-from arche.readers.schema import Schema
+from arche.readers.schema import Schema, RawSchema
 from arche.schema_definitions import extension
 from arche.tools import api, helpers
 import fastjsonschema
@@ -26,7 +26,7 @@ def basic_json_schema(data_source: str, items_numbers: List[int] = None) -> Sche
 
 def create_json_schema(
     source_key: str, items_numbers: Optional[List[int]] = None
-) -> Schema:
+) -> Union[str, RawSchema]:
     if helpers.is_collection_key(source_key):
         store = api.get_collection(source_key)
         items_count = store.count()
@@ -58,7 +58,7 @@ def create_json_schema(
     return infer_schema(samples)
 
 
-def infer_schema(samples: List[Dict[str, Any]]) -> Schema:
+def infer_schema(samples: List[Dict[str, Any]]) -> Union[str, RawSchema]:
     builder = SchemaBuilder("http://json-schema.org/draft-07/schema#")
     for sample in samples:
         builder.add_object(sample)
@@ -134,13 +134,13 @@ def format_validation_message(
     error_msg: str, path: Deque, schema_path: Deque, validator: str
 ) -> str:
     str_path = "/".join(p for p in path if isinstance(p, str))
-    schema_path = "/".join(p for p in schema_path)
+    schema_path_str: str = "/".join(p for p in schema_path)
 
     if validator == "anyOf":
         if str_path:
-            return f"'{str_path}' does not satisfy 'schema/{schema_path}'"
+            return f"'{str_path}' does not satisfy 'schema/{schema_path_str}'"
         else:
-            return f"'schema/{schema_path}' failed"
+            return f"'schema/{schema_path_str}' failed"
 
     if "Additional properties are not allowed" in error_msg:
         return error_msg
