@@ -14,6 +14,7 @@ Note that the top-most release is changes in the unreleased master branch on Git
 ### Added
 - **Anomalies** to see significant deviations in fields coverage across multiple jobs, #138
 - Support to **Bitbucket API**, in order to access files from private repositories, #71
+- Extend inferred schema with `additionalProperties: False and uniqueItems: True`, #21
 
 
 ## [0.3.6] (2019-07-12)

@@ -64,7 +64,18 @@ def infer_schema(samples: List[Dict[str, Any]]) -> Schema:
         builder.add_object(sample)
     builder.add_schema(extension)
 
-    return builder.to_schema()
+    return extend_schema(builder.to_schema())
+
+
+def extend_schema(schema: Schema) -> Schema:
+    for k, v in schema.copy().items():
+        if k == "properties":
+            schema.update(additionalProperties=False)
+        if k == "items":
+            schema.update(uniqueItems=True)
+        if isinstance(v, dict):
+            extend_schema(v)
+    return schema
 
 
 def set_item_no(items_count: int) -> List[int]:
