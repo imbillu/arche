@@ -67,7 +67,7 @@ class CloudItems(Items):
     ):
         self.key = key
         self._count = count
-        self._limit: Any = None
+        self._limit: int
         self.filters = filters
         raw = self.fetch_data()
         df = pd.DataFrame(list(raw))
