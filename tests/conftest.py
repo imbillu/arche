@@ -1,6 +1,6 @@
 from copy import deepcopy
 from itertools import zip_longest
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, List, Optional
 
 from arche.readers.items import CollectionItems, JobItems
 from arche.rules.result import Level, Message, Result, Stat
@@ -50,7 +50,7 @@ def get_df():
 class Job:
     def __init__(
         self,
-        items: Optional[Iterable] = None,
+        items: Optional[List[Dict]] = None,
         metadata: Optional[Dict] = None,
         stats: Optional[Dict] = None,
         key: str = "112358/13/21",

@@ -79,7 +79,7 @@ def set_item_no(items_count: int) -> List[int]:
 
 
 def fast_validate(
-    schema: Schema, raw_items: RawItems, keys: pd.Index
+    schema: RawSchema, raw_items: RawItems, keys: pd.Index
 ) -> Dict[str, set]:
     """Verify items one by one. It stops after the first error in an item in most cases.
     Faster than jsonschema validation
@@ -108,7 +108,7 @@ def fast_validate(
 
 
 def full_validate(
-    schema: Schema, raw_items: RawItems, keys: pd.Index
+    schema: RawSchema, raw_items: RawItems, keys: pd.Index
 ) -> Dict[str, set]:
     """This function uses jsonschema validator which returns all found error per item.
     See `fast_validate()` for arguments descriptions.
