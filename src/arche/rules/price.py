@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional, List
 
 from arche.readers.schema import TaggedFields
 from arche.rules.result import Result, Outcome
@@ -77,12 +77,12 @@ def compare_prices_for_same_urls(
         missing and new `product_url_field` tagged fields.
     """
     result = Result("Compare Prices For Same Urls")
-    url_field: Any = tagged_fields.get("product_url_field")
-    if not url_field:
+    url_field_list: Optional[List[str]] = tagged_fields.get("product_url_field")
+    if not url_field_list:
         result.add_info(Outcome.SKIPPED)
         return result
 
-    url_field = url_field[0]
+    url_field = url_field_list[0]
 
     source_df = source_df.dropna(subset=[url_field])
     target_df = target_df.dropna(subset=[url_field])
