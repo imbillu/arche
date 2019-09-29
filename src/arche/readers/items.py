@@ -67,7 +67,7 @@ class CloudItems(Items):
     ):
         self.key = key
         self._count = count
-        self._limit: int
+        self._limit: int = 0
         self.filters = filters
         raw = self.fetch_data()
         df = pd.DataFrame(list(raw))
@@ -107,6 +107,7 @@ class JobItems(CloudItems):
         self.start_index = start_index
         self.start: str = f"{key}/{start_index}"
         self._job: Job = None
+        self._limit: int = 0
         super().__init__(key, count, filters)
 
     @property
@@ -155,6 +156,7 @@ class CollectionItems(CloudItems):
         filters: Optional[api.Filters] = None,
     ):
         self.start = start
+        self._limit: int = 0
         super().__init__(key, count, filters)
 
     @property
