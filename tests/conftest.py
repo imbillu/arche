@@ -1,9 +1,9 @@
 from copy import deepcopy
 from itertools import zip_longest
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from arche.readers.items import CollectionItems, JobItems
-from arche.rules.result import Level, Message, Result, Stat
+from arche.rules.result import Level, Result, Stat
 import numpy as np
 import pandas as pd
 import pytest
@@ -206,7 +206,7 @@ def get_collection_items(mocker):
 
 def create_result(
     rule_name: str,
-    messages: Dict[Level, List[Message]],
+    messages: Dict[Level, List[Tuple]],
     stats: Optional[List[Stat]] = None,
     items_count: Optional[int] = None,
 ) -> Result:
