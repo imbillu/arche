@@ -12,11 +12,12 @@ def fields(
     normalize: bool = False,
     err_thr: float = 0.25,
 ) -> Result:
-    """Return fields values difference between dataframe.
+    """Finds fields values difference between dataframes.
 
     Args:
         names - a list of field names
         normalize - if set, all fields converted to str and processed with lower() and strip()
+        err_thr - sets the failure threshold for missing values
 
     Returns:
         Result with same, missing and new values.
