@@ -19,8 +19,8 @@ class Report:
         self.results: Dict[str, Result] = {}
 
         self.env = Environment(
-            loader=FileSystemLoader('arche/templates/'),
-            autoescape=select_autoescape(['html']),
+            loader=FileSystemLoader("arche/templates/"),
+            autoescape=select_autoescape(["html"]),
         )
         self.env.filters['linkify'] = linkify
 
@@ -32,9 +32,10 @@ class Report:
         Returns an ordered list of Results
         """
         RULE_ORDER = [Outcome.PASSED, Outcome.FAILED, Outcome.WARNING, Outcome.SKIPPED]
-        rules = sorted([(RULE_ORDER.index(rule.outcome), rule) for rule in rules],
-                       key=lambda x: x[0]
-                       )
+        rules = sorted(
+            [(RULE_ORDER.index(rule.outcome), rule) for rule in rules],
+            key=lambda x: x[0]
+        )
         return [rule[1] for rule in rules]
 
     def __call__(self, rule: Result = None) -> None:
@@ -43,14 +44,14 @@ class Report:
             f.figures
 
         if not rule:
-            template = self.env.get_template('template-full-report.html')
+            template = self.env.get_template("template-full-report.html")
             resultHTML = template.render(
                 rules=list(self._order_rules(self.results.values())),
                 pd=pd,
                 linkfy_callbacks=[callbacks.target_blank]
             )
         else:
-            template = self.env.get_template('template-single-rule.html')
+            template = self.env.get_template("template-single-rule.html")
             resultHTML = template.render(
                 rule=rule,
                 pd=pd,
