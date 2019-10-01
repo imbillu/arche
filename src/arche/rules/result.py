@@ -210,6 +210,7 @@ class Result:
 
     def show(self, keys_limit: int = 10):
         from arche.report import Report
+
         report = Report()
         IPython.display.clear_output()
         report.save(self)
