@@ -12,46 +12,42 @@
 	  outline: none;
 	  font-size: 30px;
       }
-      .no-messages::-webkit-details-marker {
-	  display: none;
-      }
-
-
+ 
       article > details > summary {
 	  margin-top: 25px;
       }
 
       .Skipped {
 	  background-color: lightgray;
-	  opacity: 0.9;
+	  opacity: 0.7;
       }
 
       .Passed {
 	  background-color: mediumseagreen;
-	  opacity: 0.9;
+	  opacity: 0.7;
       }
 
       .Warning {
 	  background-color: khaki;
-	  opacity: 0.9;
+	  opacity: 0.7;
       }
 
       .Failed {
 	  background-color: tomato;
-	  opacity: 0.9;
+	  opacity: 0.7;
       }
 
       .message {
 	  padding: 18px;
       }
 
-      * { box-sizing: border-box; }
 
       .tabs {
+	  display: flex;
+	  height: auto;
+	  width: auto;
 	  position: relative;
-	  margin: 3rem 0;
-	  background: #99A3A4;
-	  height: 14.75rem;
+
       }
       
       .tabs::before,
@@ -62,7 +58,10 @@
 
       .tabs::after { clear: both; }
 
-      .tab { float: left; }
+      .tab {
+	  float: left;
+	  height: 100%;
+      }
 
       .tab-switch { display: none; }
 
@@ -87,15 +86,14 @@
 
       .tab-content {
 	  background: #fff;
-	  color: #2c3e50;
-	  border-bottom: 0.25rem solid #bdc3c7;
-	  height: 12rem;
+	  height: fit-content;
+	  width: 100%;
 	  position: absolute;
 	  z-index: 1;
 	  top: 2.75em;
 	  left: 0;
-	  opacity: 0;
 	  transition: all 0.35s;
+	  opacity: 0;
       }
 
       .tab-switch:checked + .tab-label {
@@ -131,11 +129,16 @@
     {% endmacro %}
 
     {% macro render_figure(rule) %}
-       {% if rule._figures %}
-          {{ rule._figures[0] }}
-       {% endif %}
+      {% if rule._figures %}
+      <details>
+	<summary class="{{rule.outcome.name}}"> {{ rule.name }} - {{ rule.outcome.name }}</summary>
+	   {% for figure in rule._figures %}
+              {{ figure.to_html() | safe }}
+	   {% endfor %}
+       </details>
+     {% endif %}
     {% endmacro %}
-    
+      
     {% macro render_rule(rule) %}
       <details>
 	<summary class="{{rule.outcome.name}}">{{ rule.name }} - {{ rule.outcome.name }}</summary>
@@ -146,6 +149,7 @@
 	
       </details>
     {% endmacro %}
+
     {% macro render_messages(outcome, messages) %}
       {% for message in messages %}
          <div class="message"> 
@@ -154,6 +158,7 @@
 	 </div>
       {% endfor %}
     {% endmacro %}
+
     {% macro render_message_errors(errors) %}
        {% if errors %}
          <ul class="message-errors">
