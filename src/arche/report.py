@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from bleach import linkify
+from bleach import linkify, callbacks
 
 from IPython.display import HTML, display_html
 
@@ -22,8 +22,6 @@ class Report:
             loader=FileSystemLoader('arche/templates/'),
             autoescape=select_autoescape(['html']),
         )
-        self.env.filters['linkify'] = linkify
-        self.env.filters['pd'] = pd
 
     def save(self, result: Result) -> None:
         self.results[result.name] = result
@@ -48,12 +46,14 @@ class Report:
             resultHTML = template.render(
                 rules=list(self._order_rules(self.results.values())),
                 pd=pd,
+                linkfy_callbacks=[callbacks.target_blank]
             )
         else:
             template = self.env.get_template('template-single-rule.html')
             resultHTML = template.render(
                 rule=rule,
                 pd=pd,
+                linkfy_callbacks=[callbacks.target_blank]
             )
         display_html(resultHTML, raw=True, metadata={"isolated": True})
 

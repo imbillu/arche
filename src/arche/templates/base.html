@@ -118,7 +118,7 @@
   <body>
     <!-- Define macros to render the report -->
     {% macro to_clickable_urls(message) %}
-       {{ message|linkify|safe }}
+       {{ message|linkify(callbacks=linkfy_callbacks)|safe }}
     {% endmacro %}
 
     {% macro render_stats(rule) %}
@@ -153,7 +153,7 @@
     {% macro render_messages(outcome, messages) %}
       {% for message in messages %}
          <div class="message"> 
-           <p> {{ message.summary|string|linkify|safe }} </p>
+           <p> {{ message.summary|string|linkify(callbacks=linkfy_callbacks)|safe }} </p>
 	   {{ render_message_errors(message.errors) }}
 	 </div>
       {% endfor %}
