@@ -25,7 +25,8 @@ class Report:
     def save(self, result: Result) -> None:
         self.results[result.name] = result
 
-    def _order_rules(self, rules):
+    @staticmethod
+    def _order_rules(rules):
         """
         Returns an ordered list of Results
         """
@@ -44,7 +45,7 @@ class Report:
         if not rule:
             template = self.env.get_template("template-full-report.html")
             resultHTML = template.render(
-                rules=list(self._order_rules(self.results.values())),
+                rules=list(Report._order_rules(self.results.values())),
                 pd=pd,
                 linkfy_callbacks=[callbacks.target_blank],
             )
