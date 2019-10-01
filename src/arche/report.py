@@ -22,6 +22,7 @@ class Report:
             loader=FileSystemLoader('arche/templates/'),
             autoescape=select_autoescape(['html']),
         )
+        self.env.filters['linkify'] = linkify
 
     def save(self, result: Result) -> None:
         self.results[result.name] = result
