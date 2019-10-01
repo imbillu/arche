@@ -1,17 +1,15 @@
 from typing import Dict
 
+
 from arche import SH_URL
-from arche.rules.result import Level, Result
+from arche.rules.result import Result, Outcome
 
-from arche.rules.result import Level, Outcome, Result
-import numpy as np
 
-import pandas as pd
-
-from jinja2 import Environment, FileSystemLoader, select_autoescape
 from bleach import linkify, callbacks
-
-from IPython.display import HTML, display_html
+from IPython.display import display_html
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+import numpy as np
+import pandas as pd
 
 
 class Report:
@@ -22,7 +20,7 @@ class Report:
             loader=FileSystemLoader("arche/templates/"),
             autoescape=select_autoescape(["html"]),
         )
-        self.env.filters['linkify'] = linkify
+        self.env.filters["linkify"] = linkify
 
     def save(self, result: Result) -> None:
         self.results[result.name] = result
@@ -34,7 +32,7 @@ class Report:
         RULE_ORDER = [Outcome.PASSED, Outcome.FAILED, Outcome.WARNING, Outcome.SKIPPED]
         rules = sorted(
             [(RULE_ORDER.index(rule.outcome), rule) for rule in rules],
-            key=lambda x: x[0]
+            key=lambda x: x[0],
         )
         return [rule[1] for rule in rules]
 
@@ -48,14 +46,12 @@ class Report:
             resultHTML = template.render(
                 rules=list(self._order_rules(self.results.values())),
                 pd=pd,
-                linkfy_callbacks=[callbacks.target_blank]
+                linkfy_callbacks=[callbacks.target_blank],
             )
         else:
             template = self.env.get_template("template-single-rule.html")
             resultHTML = template.render(
-                rule=rule,
-                pd=pd,
-                linkfy_callbacks=[callbacks.target_blank]
+                rule=rule, pd=pd, linkfy_callbacks=[callbacks.target_blank]
             )
         display_html(resultHTML, raw=True, metadata={"isolated": True})
 
