@@ -26,7 +26,7 @@ def basic_json_schema(data_source: str, items_numbers: List[int] = None) -> Sche
 
 def create_json_schema(
     source_key: str, items_numbers: Optional[List[int]] = None
-) -> Union[str, RawSchema]:
+) -> RawSchema:
     if helpers.is_collection_key(source_key):
         store = api.get_collection(source_key)
         items_count = store.count()
@@ -58,7 +58,7 @@ def create_json_schema(
     return infer_schema(samples)
 
 
-def infer_schema(samples: List[Dict[str, Any]]) -> Union[str, RawSchema]:
+def infer_schema(samples: List[Dict[str, Any]]) -> RawSchema:
     builder = SchemaBuilder("http://json-schema.org/draft-07/schema#")
     for sample in samples:
         builder.add_object(sample)
