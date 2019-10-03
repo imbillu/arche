@@ -1,6 +1,6 @@
 from collections import defaultdict
 import random
-from typing import Any, Deque, Dict, List, Optional, DefaultDict, Union
+from typing import Any, Deque, Dict, List, Optional, DefaultDict
 
 from arche.readers.items import RawItems
 from arche.readers.schema import Schema, RawSchema

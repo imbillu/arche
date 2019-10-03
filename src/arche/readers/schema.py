@@ -59,7 +59,7 @@ class Schema:
         # ItemsView[str, Union[str, bool, int, float, None, list[Any]]]
         properties = cast(ItemsView[str, Dict[str, Any]], schema["properties"].items())
         for key, value in properties:
-            property_tags = value.get("tag", [])
+            property_tags = value.get("tag")
             if property_tags:
                 tagged_fields = Schema.get_field_tags(property_tags, key, tagged_fields)
         return tagged_fields

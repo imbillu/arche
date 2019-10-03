@@ -1,4 +1,4 @@
-from typing import Any, Optional, List
+from typing import Optional, List
 
 from arche.readers.schema import TaggedFields
 from arche.rules.result import Result, Outcome
