@@ -40,8 +40,6 @@ class Message:
     summary: str
     detailed: Optional[str] = None
     errors: Optional[Dict[str, Set]] = None
-
-    # expression "field(default_factory=set)" has type "Set[_T]", so we have to cast
     _err_keys: Set[Union[str, int]] = field(default_factory=set)
 
     @property

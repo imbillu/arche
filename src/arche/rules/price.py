@@ -155,14 +155,14 @@ def compare_names_for_same_urls(
     compare `name_field` field"""
 
     result = Result("Compare Names Per Url")
-    url_field: Any = tagged_fields.get("product_url_field")
-    name_field: Any = tagged_fields.get("name_field")
-    if not url_field or not name_field:
+    url_field_list: Optional[List[str]] = tagged_fields.get("product_url_field")
+    name_field_list: Optional[List[str]] = tagged_fields.get("name_field")
+    if not url_field_list or not name_field_list:
         result.add_info(Outcome.SKIPPED)
         return result
 
-    name_field = name_field[0]
-    url_field = url_field[0]
+    name_field: str = name_field_list[0]
+    url_field: str = url_field_list[0]
     diff_names_count = 0
 
     same_urls = source_df[(source_df[url_field].isin(target_df[url_field].values))][
