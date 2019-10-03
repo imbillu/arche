@@ -41,14 +41,6 @@ class Items:
             except TypeError:
                 continue
 
-    def origin_column_name(self, new: str) -> str:
-        if new in self.df.columns:
-            return new
-        for column in self.df.columns:
-            if column in new:
-                return column
-        return ""
-
     @classmethod
     def from_df(cls, df: pd.DataFrame):
         return cls(raw=np.array(df.to_dict("records")), df=df)
@@ -107,7 +99,6 @@ class JobItems(CloudItems):
         self.start_index = start_index
         self.start: str = f"{key}/{start_index}"
         self._job: Job = None
-        self._limit: int = 0
         super().__init__(key, count, filters)
 
     @property
@@ -156,7 +147,6 @@ class CollectionItems(CloudItems):
         filters: Optional[api.Filters] = None,
     ):
         self.start = start
-        self._limit: int = 0
         super().__init__(key, count, filters)
 
     @property
